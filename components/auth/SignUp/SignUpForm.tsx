@@ -2,40 +2,28 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useRouter } from 'next/navigation';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
-import { useState } from 'react';
-import { cn } from '@/lib/utils';
+
+import { Input } from '../../ui/input';
+import { Label } from '../../ui/label';
+
 import axios, { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
 import { signIn } from '@/auth';
+import { BottomGradient, LabelInputContainer } from '../auth.style';
+import { SignUpDefaultValues, SignUpFormSchema } from '../auth.config';
 
 interface SignUpFormProps {
     onSignUpSuccess: () => void;
 }
 
-const formSchema = z
-    .object({
-        email: z.string().email(),
-        username: z.string().min(3).regex(/^\w+$/, 'Username must contain only letters, numbers, and underscores'),
-        password: z.string().min(6),
-        // .regex(
-        //     /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        //     'Password must contain at least 8 characters, 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character',
-        // ),
-        confirmPassword: z.string(),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-        message: "Passwords don't match",
-        path: ['confirmPassword'],
-    });
 
-type FormData = z.infer<typeof formSchema>;
+
+type FormData = z.infer<typeof SignUpFormSchema>;
 
 export function SignUpForm({ onSignUpSuccess }: SignUpFormProps) {
     const form = useForm<FormData>({
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(SignUpFormSchema),
+        defaultValues: SignUpDefaultValues,
     });
 
     // Remove the unused formData state
@@ -53,8 +41,7 @@ export function SignUpForm({ onSignUpSuccess }: SignUpFormProps) {
                 toast.success('Sign up successful');
                 onSignUpSuccess();
             }
-			signIn()
-
+            signIn();
             console.log(res);
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -139,16 +126,3 @@ export function SignUpForm({ onSignUpSuccess }: SignUpFormProps) {
         </div>
     );
 }
-
-const BottomGradient = () => {
-    return (
-        <>
-            <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
-            <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
-        </>
-    );
-};
-
-const LabelInputContainer = ({ children, className }: { children: React.ReactNode; className?: string }) => {
-    return <div className={cn('flex flex-col space-y-2 w-full', className)}>{children}</div>;
-};

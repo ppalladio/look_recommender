@@ -1,17 +1,22 @@
 'use client';
 import { useState } from 'react';
-import { SignUpForm } from '@/components/SignUp/SignUpForm';
+import { SignUpForm } from '@/components/auth/SignUp/SignUpForm';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import Link from 'next/link';
 import { Mountain, UploadIcon, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuGroup } from '@/components/ui/dropdown-menu';
+import SignInForm from '@/components/auth/SignIn/SignInForm';
 
 const HomePage = () => {
     const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+    const [isSignInOpen, setIsSignInOpen] = useState(false);
     const isLoggedIn = false;
     const handleSignUpSuccess = () => {
         setIsSignUpOpen(false);
+    };
+	const handleSignInSuccess = () => {
+        setIsSignInOpen(false);
     };
 
     return (
@@ -77,7 +82,7 @@ const HomePage = () => {
                                 </DropdownMenuContent>
                             ) : (
                                 <DropdownMenuGroup>
-                                    <DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => setIsSignInOpen(true)}>
                                         <span>Login</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onSelect={() => setIsSignUpOpen(true)}>
@@ -89,6 +94,12 @@ const HomePage = () => {
                     </DropdownMenu>
                 </div>
             </header>
+			<Dialog open={isSignInOpen} onOpenChange={setIsSignInOpen}>
+                <DialogHeader hidden></DialogHeader>
+                <DialogContent>
+                    <SignInForm onSignInSuccess={handleSignInSuccess} />
+                </DialogContent>
+            </Dialog>
             <Dialog open={isSignUpOpen} onOpenChange={setIsSignUpOpen}>
                 <DialogHeader hidden></DialogHeader>
                 <DialogContent>
