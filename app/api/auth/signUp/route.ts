@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs';
 import prisma from '@/lib/prisma';
 
 export async function POST(req: Request) {
-    console.log(req);
     if (!req.body) {
         return new NextResponse(JSON.stringify({ message: 'No body', status: 400 }), { headers: { 'Content-Type': 'application/json' } });
     }

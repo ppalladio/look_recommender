@@ -32,7 +32,7 @@ export function SignUpForm({ onSignUpSuccess }: SignUpFormProps) {
     const onSubmit = async (data: FormData) => {
         console.log(data);
         try {
-            const res = await axios.post('/api/v1/signUp', data);
+            const res = await axios.post('/api/auth/signUp', data);
             console.log(res);
             if (res.status === 400 && res.data.includes('Email already exists')) {
                 toast.error(`${res.data}`);
@@ -42,7 +42,6 @@ export function SignUpForm({ onSignUpSuccess }: SignUpFormProps) {
                 onSignUpSuccess();
             }
             signIn();
-            console.log(res);
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response?.data.message) {

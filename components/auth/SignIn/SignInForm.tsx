@@ -6,7 +6,8 @@ import { Label } from '../../ui/label';
 import { Input } from '../../ui/input';
 import { BottomGradient, LabelInputContainer } from '../auth.style';
 import { SignInDefaultValues, SignInFormSchema } from '../auth.config';
-
+import axios, { AxiosError } from 'axios';
+import toast from 'react-hot-toast';
 type formData = z.infer<typeof SignInFormSchema>;
 interface SignInFormProps {
     onSignInSuccess: () => void;
@@ -17,8 +18,17 @@ const SignInForm = ({ onSignInSuccess }: SignInFormProps) => {
         defaultValues: SignInDefaultValues,
     });
 
-    const onSubmit = async (formData: formData) => {
-        console.log('🚀 ~ onSubmit ~ formData:', formData);
+    const onSubmit = async (formData: formData) => { 
+        try {
+            const res = await axios.post('/api/auth/signIn', formData);
+            if (res.status === 200) {
+                toast.success('Sign in successful');
+            }
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                toast.error(error.response?.data.message);
+            }
+        }
     };
 
     return (
