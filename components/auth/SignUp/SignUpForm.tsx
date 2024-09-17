@@ -8,7 +8,6 @@ import { Label } from '../../ui/label';
 
 import axios, { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
-import { signIn } from '@/auth';
 import { BottomGradient, LabelInputContainer } from '../auth.style';
 import { SignUpDefaultValues, SignUpFormSchema } from '../auth.config';
 
@@ -32,7 +31,7 @@ export function SignUpForm({ onSignUpSuccess }: SignUpFormProps) {
     const onSubmit = async (data: FormData) => {
         console.log(data);
         try {
-            const res = await axios.post('/api/auth/signUp', data);
+            const res = await axios.post('/auth/signUp', data);
             console.log(res);
             if (res.status === 400 && res.data.includes('Email already exists')) {
                 toast.error(`${res.data}`);
@@ -41,7 +40,6 @@ export function SignUpForm({ onSignUpSuccess }: SignUpFormProps) {
                 toast.success('Sign up successful');
                 onSignUpSuccess();
             }
-            signIn();
         } catch (error) {
             if (error instanceof AxiosError) {
                 if (error.response?.data.message) {

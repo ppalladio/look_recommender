@@ -1,9 +1,16 @@
+import { signIn } from '@/auth';
 import prisma from '@/lib/prisma';
 import { compare } from 'bcryptjs';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
     const data = await req.json();
+
+    await signIn('credentials', {
+        email: data.email,
+        password: data.password,
+    });
+
     const user = await prisma.user.findUnique({
         where: {
             email: data.email,
@@ -18,5 +25,5 @@ export async function POST(req: NextRequest) {
         return new NextResponse(JSON.stringify({ message: 'Invalid password' }), { status: 400 });
     }
 
-    return new NextResponse(JSON.stringify({ message: 'Sign in successful' }), { status: 200 });
+    return new NextResponse(JSON.stringify({ user, message: 'Sign in successful' }), { status: 200 });
 }

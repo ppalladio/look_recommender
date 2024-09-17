@@ -8,6 +8,8 @@ import { BottomGradient, LabelInputContainer } from '../auth.style';
 import { SignInDefaultValues, SignInFormSchema } from '../auth.config';
 import axios, { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
+import { signIn } from '@/auth';
+import { useRouter } from 'next/navigation';
 type formData = z.infer<typeof SignInFormSchema>;
 interface SignInFormProps {
     onSignInSuccess: () => void;
@@ -17,14 +19,18 @@ const SignInForm = ({ onSignInSuccess }: SignInFormProps) => {
         resolver: zodResolver(SignInFormSchema),
         defaultValues: SignInDefaultValues,
     });
-
-    const onSubmit = async (formData: formData) => { 
+    const router = useRouter();
+    const onSubmit = async (formData: formData) => {
         try {
-            const res = await axios.post('/api/auth/signIn', formData);
+            const res = await axios.post('/api/signIn', formData);
+
             if (res.status === 200) {
                 toast.success('Sign in successful');
+                onSignInSuccess();
+                router.push('/settings');
             }
         } catch (error) {
+            console.log(error);
             if (error instanceof AxiosError) {
                 toast.error(error.response?.data.message);
             }

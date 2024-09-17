@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SignUpForm } from '@/components/auth/SignUp/SignUpForm';
 import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import Link from 'next/link';
@@ -7,15 +7,26 @@ import { Mountain, UploadIcon, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuGroup } from '@/components/ui/dropdown-menu';
 import SignInForm from '@/components/auth/SignIn/SignInForm';
+import { auth, signOut } from '@/auth';
+import { Session } from 'next-auth';
 
 const HomePage = () => {
+const [session, setSession] = useState<Session | null>(null);
+
+    useEffect(() => {
+        const getSession = async () => {
+            const currentSession = await auth();
+            setSession(currentSession);
+        };
+        getSession();
+    }, []);
+
     const [isSignUpOpen, setIsSignUpOpen] = useState(false);
     const [isSignInOpen, setIsSignInOpen] = useState(false);
-    const isLoggedIn = false;
     const handleSignUpSuccess = () => {
         setIsSignUpOpen(false);
     };
-	const handleSignInSuccess = () => {
+    const handleSignInSuccess = () => {
         setIsSignInOpen(false);
     };
 
@@ -57,7 +68,7 @@ const HomePage = () => {
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent className="w-auto mr-5">
-                            {isLoggedIn ? (
+                            {session ? (
                                 <DropdownMenuContent>
                                     <DropdownMenuItem className=" border-gray-300 flex flex-row items-center justify-center" onClick={() => {}}>
                                         <UploadIcon size={16} className="mr-2" />
@@ -75,7 +86,7 @@ const HomePage = () => {
                                             <span>Billing</span>
                                         </DropdownMenuItem>
                                     </DropdownMenuGroup>
-                                    <DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => signOut()}>
                                         <LogOut className="mr-2 h-4 w-4" />
                                         <span>Log out</span>
                                     </DropdownMenuItem>
@@ -94,7 +105,7 @@ const HomePage = () => {
                     </DropdownMenu>
                 </div>
             </header>
-			<Dialog open={isSignInOpen} onOpenChange={setIsSignInOpen}>
+            <Dialog open={isSignInOpen} onOpenChange={setIsSignInOpen}>
                 <DialogHeader hidden></DialogHeader>
                 <DialogContent>
                     <SignInForm onSignInSuccess={handleSignInSuccess} />
